@@ -3,4 +3,5 @@ site :opscode
 metadata
 
 cookbook 'apt'
-cookbook 'java'
+cookbook 'java', git: 'https://github.com/myers/java.git'
+

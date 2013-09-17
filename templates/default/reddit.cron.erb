@@ -1,0 +1,12 @@
+0    3 * * * root /sbin/start --quiet reddit-job-update_sr_names
+30  16 * * * root /sbin/start --quiet reddit-job-update_reddits
+0    * * * * root /sbin/start --quiet reddit-job-update_promos
+*/5  * * * * root /sbin/start --quiet reddit-job-clean_up_hardcache
+*    * * * * root /sbin/start --quiet reddit-job-email
+*/2  * * * * root /sbin/start --quiet reddit-job-broken_things
+*/2  * * * * root /sbin/start --quiet reddit-job-rising
+
+# disabled by default, uncomment if you need these jobs
+#*/2  * * * * root /sbin/start --quiet reddit-job-google_checkout
+#0    0 * * * root /sbin/start --quiet reddit-job-update_gold_users
+0    * * * * root /sbin/start --quiet reddit-job-queue_summary_emails

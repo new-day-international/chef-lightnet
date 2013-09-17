@@ -13,7 +13,7 @@ page_cache_time = 0
 
 set debug = true
 
-domain = $REDDIT_DOMAIN
+domain = <%= node['lightnet']['domain_name'] %>
 
 [server:main]
 port = 8001
