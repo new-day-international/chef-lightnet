@@ -72,6 +72,11 @@ end
 # done
 # TODO: why do I need to create the shared dir by hand?
 
+directory "/home/reddit" do
+  user 'reddit'
+  group 'nogroup'
+end
+
 git "/home/reddit/reddit" do 
   repo 'https://github.com/new-day-international/reddit.git'
   revision 'production'
@@ -164,7 +169,6 @@ fi
 rabbitmqctl set_permissions -p / reddit ".*" ".*" ".*"
   EOH
 end
-
 
 template "/home/reddit/reddit/r2/development.update" do
   mode 0644
