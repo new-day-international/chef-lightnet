@@ -1,4 +1,6 @@
-user 'reddit' do
+group node[:lightnet][:group]
+
+user node[:lightnet][:user] do
   comment 'reddit user'
   system true
   shell '/bin/false'
@@ -72,24 +74,23 @@ end
 # done
 # TODO: why do I need to create the shared dir by hand?
 
-directory "/home/reddit" do
-  user 'reddit'
-  group 'nogroup'
+directory node[:lightnet][:application_directory] do
+  user node[:lightnet][:user]
+  group node[:lightnet][:group]
 end
 
-git "/home/reddit/reddit" do 
+git "#{node[:lightnet][:application_directory]}/reddit" do 
   repo 'https://github.com/new-day-international/reddit.git'
-  revision 'production'
-  user 'reddit'
-  group 'nogroup'
+  user node[:lightnet][:user]
+  group node[:lightnet][:group]
 end
 
 
 # TODO make production branch for i18n
-git "/home/reddit/reddit-i18n" do 
+git "#{node[:lightnet][:application_directory]}/reddit-i18n" do 
   repo 'https://github.com/new-day-international/reddit-i18n.git'
-  user 'reddit'
-  group 'nogroup'
+  user node[:lightnet][:user]
+  group node[:lightnet][:group]
 end
 
 # execute "create reddit cassandra keyspace" do
@@ -98,18 +99,18 @@ end
 # end
 
 
-bash "cassandra: setup reddit keyspace and peramcache column family" do
-  code <<-EOH
-if ! echo | cassandra-cli -h localhost -k reddit &> /dev/null; then
-    echo "create keyspace reddit;" | cassandra-cli -h localhost -B
-fi
+# bash "cassandra: setup reddit keyspace and peramcache column family" do
+#   code <<-EOH
+# if ! echo | cassandra-cli -h localhost -k reddit &> /dev/null; then
+#     echo "create keyspace reddit;" | cassandra-cli -h localhost -B
+# fi
 
-cat <<CASS | cassandra-cli -B -h localhost -k reddit || true
-create column family permacache with column_type = 'Standard' and
-                                     comparator = 'BytesType';
-CASS
-  EOH
-end
+# cat <<CASS | cassandra-cli -B -h localhost -k reddit || true
+# create column family permacache with column_type = 'Standard' and
+#                                      comparator = 'BytesType';
+# CASS
+#   EOH
+# end
 
 
 # ###############################################################################
@@ -133,17 +134,17 @@ end
 bash "postgresql: create database and import functions" do 
   code <<-EOH
 
-SQL="SELECT COUNT(1) FROM pg_catalog.pg_database WHERE datname = 'reddit';"
+SQL="SELECT COUNT(1) FROM pg_catalog.pg_database WHERE datname = '#{node[:lightnet][:postgres_database]}';"
 IS_DATABASE_CREATED=$(sudo -u postgres psql -t -c "$SQL")
 
 if [ $IS_DATABASE_CREATED -ne 1 ]; then
     cat <<PGSCRIPT | sudo -u postgres psql
-CREATE DATABASE reddit WITH ENCODING = 'UTF8' LC_COLLATE = 'en_US.UTF-8' LC_CTYPE='en_US.UTF-8' TEMPLATE template0;
-CREATE USER reddit WITH PASSWORD 'password';
+CREATE DATABASE #{node[:lightnet][:postgres_database]} WITH ENCODING = 'UTF8' LC_COLLATE = 'en_US.UTF-8' LC_CTYPE='en_US.UTF-8' TEMPLATE template0;
+CREATE USER #{node[:lightnet][:postgres_user]} WITH PASSWORD '#{node[:lightnet][:postgres_password]}';
 PGSCRIPT
 fi
 
-sudo -u postgres psql reddit < /home/reddit/reddit/sql/functions.sql
+sudo -u postgres psql #{node[:lightnet][:postgres_user]} < #{node[:lightnet][:application_directory]}/reddit/sql/functions.sql
   
   EOH
 end
@@ -156,30 +157,30 @@ bash "rabbitmq: create vhost and user" do
 
   code <<-EOH
 
-if ! rabbitmqctl list_vhosts | egrep "^/$"
+if ! rabbitmqctl list_vhosts | egrep "^#{node[:lightnet][:rabbitmq_vhost]}$"
 then
-    rabbitmqctl add_vhost /
+    rabbitmqctl add_vhost #{node[:lightnet][:rabbitmq_vhost]}
 fi
 
-if ! rabbitmqctl list_users | egrep "^reddit"
+if ! rabbitmqctl list_users | egrep "^#{node[:lightnet][:rabbitmq_user]}"
 then
-    rabbitmqctl add_user reddit reddit
+    rabbitmqctl add_user #{node[:lightnet][:rabbitmq_user]} #{node[:lightnet][:rabbitmq_user]}
 fi
 
-rabbitmqctl set_permissions -p / reddit ".*" ".*" ".*"
+rabbitmqctl set_permissions -p #{node[:lightnet][:rabbitmq_vhost]} #{node[:lightnet][:rabbitmq_user]} ".*" ".*" ".*"
   EOH
 end
 
-template "/home/reddit/reddit/r2/development.update" do
+template "#{node[:lightnet][:application_directory]}/reddit/r2/development.update" do
   mode 0644
-  owner "reddit"
-  group "nogroup"
+  owner node[:lightnet][:user]
+  group node[:lightnet][:group]
 end
 
-template "/home/reddit/reddit/r2/production.update" do
+template "#{node[:lightnet][:application_directory]}/r2/production.update" do
   mode 0644
-  owner "reddit"
-  group "nogroup"
+  owner node[:lightnet][:user]
+  group node[:lightnet][:group]
 end
 
 # ###############################################################################
@@ -187,7 +188,7 @@ end
 # ###############################################################################
 
 bash "build reddit" do
-  cwd '/home/reddit/reddit/r2'
+  cwd "#{node[:lightnet][:application_directory]}/reddit/r2"
   code <<-EOH
 sudo -u reddit python setup.py build
 sudo -u reddit make pyx # generate the .c files from .pyx
@@ -196,24 +197,24 @@ python setup.py develop
 end
 
 bash "build reddit-i18n" do
-  cwd '/home/reddit/reddit-i18n'
+  cwd "#{node[:lightnet][:application_directory]}/reddit-i18n"
   code <<-EOH
-sudo -u reddit python setup.py build
+sudo -u #{node[:lightnet][:user]} python setup.py build
 python setup.py develop
-sudo -u reddit make
+sudo -u #{node[:lightnet][:user]} make
   EOH
 end
 
 bash "build reddit (part 2)" do
-  cwd '/home/reddit/reddit/r2'
+  cwd "#{node[:lightnet][:application_directory]}/reddit/r2"
   code <<-EOH
-sudo -u reddit make
-sudo -u reddit make ini
+sudo -u #{node[:lightnet][:user]} make
+sudo -u #{node[:lightnet][:user]} make ini
   EOH
 end
 
-link "/home/reddit/reddit/r2/run.ini" do
-  to "/home/reddit/reddit/r2/development.ini"
+link "#{node[:lightnet][:application_directory]}/reddit/r2/run.ini" do
+  to "#{node[:lightnet][:application_directory]}/reddit/r2/development.ini"
 end
 
 
@@ -255,32 +256,32 @@ end
 
 ruby_block 'reddit: copy upstart files' do 
   block do
-    ::FileUtils.cp(Dir.glob('/home/reddit/reddit/upstart/*.conf'), '/etc/init')
+    ::FileUtils.cp(Dir.glob("#{node[:lightnet][:application_directory]}/reddit/upstart/*.conf"), '/etc/init')
   end
 end
 
 file "/etc/default/reddit" do
   content <<-DEFAULT
-export REDDIT_ROOT=/home/reddit/reddit/r2
-export REDDIT_INI=/home/reddit/reddit/r2/run.ini
-export REDDIT_USER=reddit
-export REDDIT_GROUP=nogroup
-export REDDIT_CONSUMER_CONFIG=/home/reddit/consumer-count.d
-alias wrap-job=/home/reddit/reddit/scripts/wrap-job
-alias manage-consumers=/home/reddit/reddit/scripts/manage-consumers
+export REDDIT_ROOT=#{node[:lightnet][:application_directory]}/reddit/r2
+export REDDIT_INI=#{node[:lightnet][:application_directory]}/reddit/r2/run.ini
+export REDDIT_USER=#{node[:lightnet][:user]}
+export REDDIT_GROUP=#{node[:lightnet][:group]}
+export REDDIT_CONSUMER_CONFIG=#{node[:lightnet][:application_directory]}/consumer-count.d
+alias wrap-job=#{node[:lightnet][:application_directory]}/reddit/scripts/wrap-job
+alias manage-consumers=#{node[:lightnet][:application_directory]}/reddit/scripts/manage-consumers
   DEFAULT
 end
 
-directory "/home/reddit/consumer-count.d" do
-  user 'reddit'
-  group 'nogroup'
+directory "#{node[:lightnet][:application_directory]}/consumer-count.d" do
+  user node[:lightnet][:user]
+  group node[:lightnet][:group]
 end
 
 def set_consumer_count(filename, count)
-  file "/home/reddit/consumer-count.d/#{filename}" do
+  file "#{node[:lightnet][:application_directory]}/consumer-count.d/#{filename}" do
     content "#{count}"
-    user 'reddit'
-    group 'nogroup'
+  user node[:lightnet][:user]
+  group node[:lightnet][:group]
   end
 end
 
@@ -308,8 +309,8 @@ if false
   bash do
     code <<-BASH
 
-cd /home/reddit/reddit/r2
-sudo -u reddit paster run run.ini r2/models/populatedb.py -c 'populate()'
+cd #{node[:lightnet][:application_directory]}/reddit/r2
+sudo -u #{node[:lightnet][:user]} paster run run.ini r2/models/populatedb.py -c 'populate()'
 initctl start reddit-job-update_reddits
 
     BASH

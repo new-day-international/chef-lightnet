@@ -6,9 +6,11 @@ Vagrant.configure("2") do |config|
   # options are documented and commented below. For a complete reference,
   # please see the online documentation at vagrantup.com.
 
+  config.omnibus.chef_version = '10.14.2'
+
   config.vm.hostname = "lightnet-berkshelf"
 
-  config.vm.box_url = "http://files.vagrantup.com/precise64.box"
+  #config.vm.box_url = "http://files.vagrantup.com/precise64.box"
   config.vm.box = "precise64"
 
   # Assign this VM to a host-only network IP, allowing you to access it
@@ -43,6 +45,11 @@ Vagrant.configure("2") do |config|
     # Use VBoxManage to customize the VM. For example to change memory:
     vb.customize ["modifyvm", :id, "--memory", "3072"]
   end
+
+  config.vm.provider :lxc do |lxc|
+    # Same effect as as 'customize ["modifyvm", :id, "--memory", "1024"]' for VirtualBox
+    lxc.customize 'cgroup.memory.limit_in_bytes', '3072M'
+  end
   
   # View the documentation for the provider you're using for more
   # information on available options.
@@ -64,11 +71,6 @@ Vagrant.configure("2") do |config|
 
   config.vm.provision :chef_solo do |chef|
     chef.json = {
-      :mysql => {
-        :server_root_password => 'rootpass',
-        :server_debian_password => 'debpass',
-        :server_repl_password => 'replpass'
-      },
       :java => {
        	:oracle => {
           "accept_oracle_download_terms" => true
@@ -79,8 +81,16 @@ Vagrant.configure("2") do |config|
       }
     }
 
+    if ENV['LIGHTNET_TEST']
+      chef.json[:lightnet].merge!({
+        :application_directory => '/vagrant',
+        :user => 'vagrant',
+        :group => 'vagrant'
+      })
+    end
+
     chef.run_list = [
-        "recipe[lightnet::default]"
+      "recipe[lightnet::default]"
     ]
   end
 end

@@ -1,9 +1,9 @@
 package 'joe'
 
-ruby_block 'make joe not leave backup files' do
-  block do
-    rc = Chef::Util::FileEdit.new("/etc/joe/joerc")
-    rc.search_file_replace(/^ -nobackups/, '-nobackups')
-    rc.write_file
-  end
+bash 'joe: enable nobackup' do
+  code <<-BASH
+
+ruby -pi.bak -e "gsub(/^ -nobackups/, '-nobackups')" /etc/joe/joerc
+
+  BASH
 end
