@@ -1,3 +1,4 @@
+default[:lightnet][:create_user] = true
 default[:lightnet][:user] = "reddit"
 default[:lightnet][:group] = "nogroup"
 

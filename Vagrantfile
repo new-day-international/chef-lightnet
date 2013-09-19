@@ -81,11 +81,12 @@ Vagrant.configure("2") do |config|
       }
     }
 
-    if ENV['LIGHTNET_TEST']
+    unless ENV['LIGHTNET_PRODUCTION']
       chef.json[:lightnet].merge!({
         :application_directory => '/vagrant',
+        :create_user => false,
         :user => 'vagrant',
-        :group => 'vagrant'
+        :group => 'vagrant',
       })
     end
 

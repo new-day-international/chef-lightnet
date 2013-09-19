@@ -1,9 +1,11 @@
 group node[:lightnet][:group]
 
-user node[:lightnet][:user] do
-  comment 'reddit user'
-  system true
-  shell '/bin/false'
+if node[:lightnet][:create_user]
+  user node[:lightnet][:user] do
+    comment 'reddit user'
+    system true
+    shell "/bin/false"
+  end
 end
 
 packages = %w(
@@ -93,41 +95,6 @@ git "#{node[:lightnet][:application_directory]}/reddit-i18n" do
   group node[:lightnet][:group]
 end
 
-# execute "create reddit cassandra keyspace" do
-#   command 'echo "create keyspace reddit;" | cassandra-cli -h localhost -B'
-#   only_if 'cassandra-cli -h localhost -k reddit &> /dev/null'
-# end
-
-
-# bash "cassandra: setup reddit keyspace and peramcache column family" do
-#   code <<-EOH
-# if ! echo | cassandra-cli -h localhost -k reddit &> /dev/null; then
-#     echo "create keyspace reddit;" | cassandra-cli -h localhost -B
-# fi
-
-# cat <<CASS | cassandra-cli -B -h localhost -k reddit || true
-# create column family permacache with column_type = 'Standard' and
-#                                      comparator = 'BytesType';
-# CASS
-#   EOH
-# end
-
-
-# ###############################################################################
-# # Configure Cassandra
-# ###############################################################################
-# if ! echo | cassandra-cli -h localhost -k reddit &> /dev/null; then
-#     echo "create keyspace reddit;" | cassandra-cli -h localhost -B
-# fi
-
-# cat <<CASS | cassandra-cli -B -h localhost -k reddit || true
-# create column family permacache with column_type = 'Standard' and
-#                                      comparator = 'BytesType';
-# CASS
-
-
-
-
 # ###############################################################################
 # # Configure PostgreSQL
 # ###############################################################################
@@ -177,7 +144,7 @@ template "#{node[:lightnet][:application_directory]}/reddit/r2/development.updat
   group node[:lightnet][:group]
 end
 
-template "#{node[:lightnet][:application_directory]}/r2/production.update" do
+template "#{node[:lightnet][:application_directory]}/reddit/r2/production.update" do
   mode 0644
   owner node[:lightnet][:user]
   group node[:lightnet][:group]
@@ -217,6 +184,13 @@ link "#{node[:lightnet][:application_directory]}/reddit/r2/run.ini" do
   to "#{node[:lightnet][:application_directory]}/reddit/r2/development.ini"
 end
 
+bash "reddit: setup env" do
+  cwd "#{node[:lightnet][:application_directory]}/reddit"
+  code <<-BASH
+./scripts/create_env.py r2/development.ini
+./scripts/create_env.py r2/test.ini
+  BASH
+end
 
 ruby_block 'enable haproxy' do
   block do
@@ -295,14 +269,15 @@ set_consumer_count 'vote_comment_q', 1
 set_consumer_count 'summary_email_q', 1
 
 bash "reddit: start" do 
-  code "initctl emit reddit-restart"
+  code <<-BASH
+initctl emit reddit-stop || true
+initctl emit reddit-start
+  BASH
 end
 
 template "/etc/cron.d/reddit" do
   source "reddit.cron.erb"
   mode 0644
-  owner "reddit"
-  group "nogroup"
 end
 
 if false

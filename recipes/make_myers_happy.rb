@@ -1,9 +1,13 @@
 package 'joe'
 
-bash 'joe: enable nobackup' do
-  code <<-BASH
+python 'joe: enable nobackup' do
+  code <<-PYSCRIPT
 
-ruby -pi.bak -e "gsub(/^ -nobackups/, '-nobackups')" /etc/joe/joerc
+import re
+ff = open('/etc/joe/joerc', 'rb')
+new_contents = re.sub('  -nobackup', '-nobackup', ff.read())
+ff = open('/etc/joe/joerc', 'wb')
+ff.write(new_contents)
 
-  BASH
+  PYSCRIPT
 end
