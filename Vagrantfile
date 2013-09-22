@@ -28,7 +28,7 @@ Vagrant.configure("2") do |config|
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine. In the example below,
   # accessing "localhost:8080" will access port 80 on the guest machine.
-  config.vm.network :forwarded_port, guest: 80, host: 8080
+  # config.vm.network :forwarded_port, guest: 80, host: 8080
 
 
   # Share an additional folder to the guest VM. The first argument is
@@ -71,27 +71,32 @@ Vagrant.configure("2") do |config|
 
   config.vm.provision :chef_solo do |chef|
     chef.json = {
-      :java => {
-       	:oracle => {
+      java: {
+       	oracle: {
           "accept_oracle_download_terms" => true
         }
       },
-      :lightnet => {
-        :domain_name => 'localdev.lightnet.is'
-      }
+      lightnet: {
+        domain_name: 'localdev.lightnet.is'
+      },
+      postgresql: {
+        password: {
+          postgres: 'password',
+        }
+      },
     }
 
     unless ENV['LIGHTNET_PRODUCTION']
       chef.json[:lightnet].merge!({
-        :application_directory => '/vagrant',
-        :create_user => false,
-        :user => 'vagrant',
-        :group => 'vagrant',
+        create_user: false,
+        application_directory: '/vagrant',
+        user: 'vagrant',
+        group: 'vagrant',
       })
     end
 
     chef.run_list = [
-      "recipe[lightnet::default]"
+      "recipe[lightnet::development_vm]"
     ]
   end
 end

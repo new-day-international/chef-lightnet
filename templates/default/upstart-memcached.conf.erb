@@ -1,0 +1,25 @@
+# memcached - a distributed memory object caching system
+
+description     "memcached test server"
+
+start on filesystem
+stop on runlevel [!2345]
+
+respawn
+respawn limit 10 5
+umask 022
+
+pre-start script
+  if [ -f '/etc/default/memcached' ]; then
+    . /etc/default/memcached
+  fi
+  [ "x$ENABLE_MEMCACHED" = xyes ] || { stop; exit 0; }
+end script
+
+script
+  if [ -e /etc/memcached-test.conf ]; then
+    OPT=$(awk '/^-/' /etc/memcached-test.conf )
+    LOG=$(awk '$1=="logfile"{print $2}' /etc/memcached-test.conf )
+  fi
+  exec /usr/bin/memcached $OPT >${LOG:=/dev/null} 2>&1
+end script

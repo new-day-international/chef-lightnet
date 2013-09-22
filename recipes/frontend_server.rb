@@ -38,7 +38,8 @@ packages = %w(
   python-zope.interface
   python-kazoo
   python-stripe
-
+  python-pip
+  
   nodejs
   gettext
   make
@@ -54,27 +55,6 @@ packages.each do |package_name|
     action :install
   end
 end
-
-
-
-# ###############################################################################
-# # Wait for all the services to be up
-# ###############################################################################
-# # cassandra no longer auto-starts
-# service cassandra start
-
-# # check each port for connectivity
-# echo "Waiting for services to be available, see source for port meanings..."
-# # 11211 - memcache
-# # 5432 - postgres
-# # 5672 - rabbitmq
-# # 9160 - cassandra
-# for port in 11211 5432 5672 9160; do
-#     while ! nc -vz localhost $port; do
-#         sleep 1
-#     done
-# done
-# TODO: why do I need to create the shared dir by hand?
 
 directory node[:lightnet][:application_directory] do
   user node[:lightnet][:user]
@@ -98,47 +78,20 @@ end
 # ###############################################################################
 # # Configure PostgreSQL
 # ###############################################################################
-bash "postgresql: create database and import functions" do 
+bash "postgresql: import functions" do 
   code <<-EOH
-
-SQL="SELECT COUNT(1) FROM pg_catalog.pg_database WHERE datname = '#{node[:lightnet][:postgres_database]}';"
-IS_DATABASE_CREATED=$(sudo -u postgres psql -t -c "$SQL")
-
-if [ $IS_DATABASE_CREATED -ne 1 ]; then
-    cat <<PGSCRIPT | sudo -u postgres psql
-CREATE DATABASE #{node[:lightnet][:postgres_database]} WITH ENCODING = 'UTF8' LC_COLLATE = 'en_US.UTF-8' LC_CTYPE='en_US.UTF-8' TEMPLATE template0;
-CREATE USER #{node[:lightnet][:postgres_user]} WITH PASSWORD '#{node[:lightnet][:postgres_password]}';
-PGSCRIPT
-fi
-
-sudo -u postgres psql #{node[:lightnet][:postgres_user]} < #{node[:lightnet][:application_directory]}/reddit/sql/functions.sql
-  
-  EOH
-end
-
-# ###############################################################################
-# # Configure RabbitMQ
-# ###############################################################################
-
-bash "rabbitmq: create vhost and user" do 
-
-  code <<-EOH
-
-if ! rabbitmqctl list_vhosts | egrep "^#{node[:lightnet][:rabbitmq_vhost]}$"
-then
-    rabbitmqctl add_vhost #{node[:lightnet][:rabbitmq_vhost]}
-fi
-
-if ! rabbitmqctl list_users | egrep "^#{node[:lightnet][:rabbitmq_user]}"
-then
-    rabbitmqctl add_user #{node[:lightnet][:rabbitmq_user]} #{node[:lightnet][:rabbitmq_user]}
-fi
-
-rabbitmqctl set_permissions -p #{node[:lightnet][:rabbitmq_vhost]} #{node[:lightnet][:rabbitmq_user]} ".*" ".*" ".*"
+sudo -u postgres psql #{node[:lightnet][:postgres_database]} < #{node[:lightnet][:application_directory]}/reddit/sql/functions.sql
+sudo -u postgres psql #{node[:lightnet][:test][:postgres_database]} < #{node[:lightnet][:application_directory]}/reddit/sql/functions.sql
   EOH
 end
 
 template "#{node[:lightnet][:application_directory]}/reddit/r2/development.update" do
+  mode 0644
+  owner node[:lightnet][:user]
+  group node[:lightnet][:group]
+end
+
+template "#{node[:lightnet][:application_directory]}/reddit/r2/test.update" do
   mode 0644
   owner node[:lightnet][:user]
   group node[:lightnet][:group]
@@ -278,6 +231,10 @@ end
 template "/etc/cron.d/reddit" do
   source "reddit.cron.erb"
   mode 0644
+end
+
+python_pip 'mock' do
+  action :install
 end
 
 if false

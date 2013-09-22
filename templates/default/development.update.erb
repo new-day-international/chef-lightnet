@@ -15,5 +15,9 @@ set debug = true
 
 domain = <%= node['lightnet']['domain_name'] %>
 
+amqp_user = <%= node['lightnet']['rabbitmq_user'] %>
+amqp_pass = <%= node['lightnet']['rabbitmq_password'] %>
+amqp_virtual_host = <%= node['lightnet']['rabbitmq_vhost'] %>
+
 [server:main]
 port = 8001

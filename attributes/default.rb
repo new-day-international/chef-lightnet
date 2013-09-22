@@ -12,12 +12,14 @@ default[:lightnet][:cassandra_keyspace] = "reddit"
 
 default[:lightnet][:rabbitmq_vhost] = "/reddit"
 default[:lightnet][:rabbitmq_user] = "reddit"
+default[:lightnet][:rabbitmq_password] = "reddit"
 
-default[:lightnet][:test][:postgres_user] = "reddit_test"
+default[:lightnet][:test][:postgres_user] = "reddit"
 default[:lightnet][:test][:postgres_password] = "password"
 default[:lightnet][:test][:postgres_database] = "reddit_test"
 
 default[:lightnet][:test][:cassandra_keyspace] = "reddit_test"
 
 default[:lightnet][:test][:rabbitmq_vhost] = "/reddit_test"
-default[:lightnet][:test][:rabbitmq_user] = "reddit"
+default[:lightnet][:test][:rabbitmq_user] = "reddit_test"
+default[:lightnet][:test][:rabbitmq_password] = "reddit_test"
