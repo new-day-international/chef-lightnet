@@ -187,16 +187,9 @@ ruby_block 'reddit: copy upstart files' do
   end
 end
 
-file "/etc/default/reddit" do
-  content <<-DEFAULT
-export REDDIT_ROOT=#{node[:lightnet][:application_directory]}/reddit/r2
-export REDDIT_INI=#{node[:lightnet][:application_directory]}/reddit/r2/run.ini
-export REDDIT_USER=#{node[:lightnet][:user]}
-export REDDIT_GROUP=#{node[:lightnet][:group]}
-export REDDIT_CONSUMER_CONFIG=#{node[:lightnet][:application_directory]}/consumer-count.d
-alias wrap-job=#{node[:lightnet][:application_directory]}/reddit/scripts/wrap-job
-alias manage-consumers=#{node[:lightnet][:application_directory]}/reddit/scripts/manage-consumers
-  DEFAULT
+template "/etc/default/reddit" do
+  source "reddit-default.erb"
+  mode 0644
 end
 
 directory "#{node[:lightnet][:application_directory]}/consumer-count.d" do

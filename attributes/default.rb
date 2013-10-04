@@ -3,6 +3,7 @@ default[:lightnet][:user] = "reddit"
 default[:lightnet][:group] = "nogroup"
 
 default[:lightnet][:application_directory] = "/home/reddit"
+default[:lightnet][:scratch_directory] = "/home/reddit"
 
 default[:lightnet][:postgres_user] = "reddit"
 default[:lightnet][:postgres_password] = "password"
