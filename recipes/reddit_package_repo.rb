@@ -10,7 +10,8 @@ apt_repository "reddit" do
   uri "http://ppa.launchpad.net/reddit/ppa/ubuntu"
   distribution node['lsb']['codename']
   components ["main"]
-  keyserver "keyserver.ubuntu.com"
+  # https://bugs.launchpad.net/ubuntu-website/+bug/435193
+  keyserver "pool.sks-keyservers.net"
   key "65506D27"
 end
 
