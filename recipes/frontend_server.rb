@@ -230,6 +230,10 @@ python_pip 'mock' do
   action :install
 end
 
+python_pip 'mock' do
+  action :install
+end
+
 if false
   bash do
     code <<-BASH
