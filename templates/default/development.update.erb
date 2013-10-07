@@ -19,5 +19,11 @@ amqp_user = <%= node['lightnet']['rabbitmq_user'] %>
 amqp_pass = <%= node['lightnet']['rabbitmq_password'] %>
 amqp_virtual_host = <%= node['lightnet']['rabbitmq_vhost'] %>
 
+# minimum age, in days, of an account to be eligible to create a community
+min_membership_create_community = 0
+
+# so tests can post link after link with running into rate limiting
+MIN_RATE_LIMIT_KARMA = 0
+
 [server:main]
 port = 8001
