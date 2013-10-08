@@ -11,3 +11,12 @@ ff.write(new_contents)
 
   PYSCRIPT
 end
+
+if node[:lightnet][:user] == 'vagrant'
+  template '/home/vagrant/.bashrc' do
+    source "bashrc.erb"
+    mode 0644
+    owner node[:lightnet][:user]
+    group node[:lightnet][:group]
+  end
+end
