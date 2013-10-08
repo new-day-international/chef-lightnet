@@ -230,7 +230,11 @@ python_pip 'mock' do
   action :install
 end
 
-python_pip 'mock' do
+python_pip 'nosexcover' do
+  action :install
+end
+
+python_pip 'pylint' do
   action :install
 end
 
