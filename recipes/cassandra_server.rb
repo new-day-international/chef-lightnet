@@ -11,9 +11,9 @@ package 'cassandra'
 
 template '/etc/cassandra/cassandra-env.sh' do
   mode 0644
-  notifies :restart, "service[cassandra]", :delayed
 end
 
 service 'cassandra' do 
   action :start
+  subscribes :restart, "template[/etc/cassandra/cassandra-env.sh]", :immediately
 end
