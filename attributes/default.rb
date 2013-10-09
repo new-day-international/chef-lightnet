@@ -1,3 +1,5 @@
+default[:lightnet][:environment_type] = 'development'
+
 default[:lightnet][:create_user] = true
 default[:lightnet][:user] = "reddit"
 default[:lightnet][:group] = "nogroup"
@@ -10,6 +12,14 @@ default[:lightnet][:postgres_password] = "password"
 default[:lightnet][:postgres_database] = "reddit"
 
 default[:lightnet][:cassandra_keyspace] = "reddit"
+if node[:lightnet][:environment_type] == 'development'
+  default[:lightnet][:cassandra][:max_heap_size] = "738M"
+  default[:lightnet][:cassandra][:heap_newsize] = "100M"
+else
+  default[:lightnet][:cassandra][:max_heap_size] = nil
+  default[:lightnet][:cassandra][:heap_newsize] = nil
+
+end
 
 default[:lightnet][:rabbitmq_vhost] = "/reddit"
 default[:lightnet][:rabbitmq_user] = "reddit"

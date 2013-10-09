@@ -9,15 +9,8 @@ package 'libjna-java'
 
 package 'cassandra'
 
-ruby_block 'Fix per thread stack for cassandra' do
-  block do
-    rc = Chef::Util::FileEdit.new('/etc/cassandra/cassandra-env.sh')
-    rc.search_file_replace(
-      /-Xss128k/,
-      '-Xss160k'
-    )
-    rc.write_file
-  end
+template '/etc/cassandra/cassandra-env.sh' do
+  mode 0644
 end
 
 service 'cassandra' do 
