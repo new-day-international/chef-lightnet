@@ -18,7 +18,6 @@ if node[:lightnet][:environment_type] == 'development'
 else
   default[:lightnet][:cassandra][:max_heap_size] = nil
   default[:lightnet][:cassandra][:heap_newsize] = nil
-
 end
 
 default[:lightnet][:rabbitmq_vhost] = "/reddit"
