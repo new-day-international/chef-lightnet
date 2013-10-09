@@ -97,8 +97,8 @@ calculate_heap_sizes()
 #HEAP_NEWSIZE="800M"
 
 <% unless node[:lightnet][:cassandra][:max_heap_size].nil? %>
-MAX_HEAP_SIZE="<%= node[:lightnet][:cassandra][:max_heap_size] =>"
-HEAP_NEWSIZE="<%= node[:lightnet][:cassandra][:heap_newsize] =>"
+MAX_HEAP_SIZE="<%= node[:lightnet][:cassandra][:max_heap_size] %>"
+HEAP_NEWSIZE="<%= node[:lightnet][:cassandra][:heap_newsize] %>"
 <% end %>
 
 if [ "x$MAX_HEAP_SIZE" = "x" ] && [ "x$HEAP_NEWSIZE" = "x" ]; then
