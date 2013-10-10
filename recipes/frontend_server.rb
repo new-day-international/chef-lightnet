@@ -110,8 +110,8 @@ end
 bash "build reddit" do
   cwd "#{node[:lightnet][:application_directory]}/reddit/r2"
   code <<-EOH
-sudo -u reddit python setup.py build
-sudo -u reddit make pyx # generate the .c files from .pyx
+sudo -u #{node[:lightnet][:user]} python setup.py build
+sudo -u #{node[:lightnet][:user]} make pyx # generate the .c files from .pyx
 python setup.py develop
   EOH
 end
