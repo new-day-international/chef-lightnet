@@ -32,7 +32,6 @@ packages = %w(
   python-amqplib
   python-pylibmc
   python-bcrypt
-  python-snudown
   python-l2cs
   python-lxml
   python-zope.interface
@@ -75,6 +74,12 @@ git "#{node[:lightnet][:application_directory]}/reddit-i18n" do
   group node[:lightnet][:group]
 end
 
+git "#{node[:lightnet][:application_directory]}/snudown" do 
+  repo 'https://github.com/new-day-international/snudown.git'
+  user node[:lightnet][:user]
+  group node[:lightnet][:group]
+end
+
 # ###############################################################################
 # # Configure PostgreSQL
 # ###############################################################################
@@ -106,6 +111,14 @@ end
 # ###############################################################################
 # # Install and configure the reddit code
 # ###############################################################################
+
+bash "build snudown" do
+  cwd "#{node[:lightnet][:application_directory]}/snudown"
+  code <<-EOH
+sudo -u #{node[:lightnet][:user]} python setup.py build
+python setup.py develop
+  EOH
+end
 
 bash "build reddit" do
   cwd "#{node[:lightnet][:application_directory]}/reddit/r2"
