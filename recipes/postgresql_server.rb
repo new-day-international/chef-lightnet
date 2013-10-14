@@ -1,3 +1,5 @@
+include_recipe 'lightnet::reddit_package_repo'
+
 #package 'postgresql'
 
 # The Reddit PPA has a package for postgresql 9.0 that makes it hard to use 9.1
