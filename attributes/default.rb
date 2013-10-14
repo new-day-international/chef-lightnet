@@ -1,5 +1,7 @@
 default[:lightnet][:environment_type] = 'development'
 
+default[:lightnet][:domain_name] = 'localdev.lightnetb.org'
+
 default[:lightnet][:create_user] = true
 default[:lightnet][:user] = "reddit"
 default[:lightnet][:group] = "nogroup"
