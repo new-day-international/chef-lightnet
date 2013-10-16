@@ -6,6 +6,8 @@
 # apt-get install $APTITUDE_OPTIONS python-software-properties
 # apt-add-repository -y ppa:reddit/ppa
 
+# These crazy ".run_action(:add)" are a way to get the ppa added to apt before
+# the postgresql recipe downloads the postgresql packages to build pg gem
 apt_repository "reddit" do
   uri "http://ppa.launchpad.net/reddit/ppa/ubuntu"
   distribution node['lsb']['codename']
@@ -13,7 +15,7 @@ apt_repository "reddit" do
   # https://bugs.launchpad.net/ubuntu-website/+bug/435193
   keyserver "pool.sks-keyservers.net"
   key "65506D27"
-end
+end.run_action(:add)
 
 # # pin the ppa -- packages present in the ppa will take precedence over
 # # ones in other repositories (unless further pinning is done)
@@ -33,6 +35,5 @@ Package: *
 Pin: release o=LP-PPA-reddit
 Pin-Priority: 600
 HERE
-
-end
+end.run_action(:create)
 
