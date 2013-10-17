@@ -8,8 +8,9 @@ apt_repository "reddit" do
   uri "http://ppa.launchpad.net/reddit/ppa/ubuntu"
   distribution node['lsb']['codename']
   components ["main"]
-  # why this keyserver? https://bugs.launchpad.net/ubuntu-website/+bug/435193
-  keyserver "pool.sks-keyservers.net"
-  key "65506D27"
+  # why did I put this in a gist rather pulling from a keyserver?  because they kept failing!
+  key "https://gist.github.com/myers/7032130/raw"
   cache_rebuild true
 end
+
+log "Finished adding the reddit ppa to apt"
