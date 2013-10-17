@@ -14,6 +14,6 @@ end
 
 group "sudo" do
   action :modify
-  members "vagrant"
+  members node[:lightnet][:user]
   append true
 end

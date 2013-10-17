@@ -26,7 +26,7 @@ include_recipe 'lightnet::make_myers_happy'
 
 include_recipe 'lightnet::reddit_package_repo'
 
-include_recipe 'lightnet::fix_sudo_for_vagrant'
+include_recipe 'lightnet::fix_sudo'
 
 include_recipe 'lightnet::postgresql_server'
 include_recipe 'lightnet::rabbitmq_server'
