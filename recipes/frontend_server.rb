@@ -251,6 +251,10 @@ python_pip 'pylint' do
   action :install
 end
 
+python_pip 'raven' do
+  action :install
+end
+
 if false
   bash do
     code <<-BASH
