@@ -6,6 +6,10 @@ default[:lightnet][:create_user] = true
 default[:lightnet][:user] = "reddit"
 default[:lightnet][:group] = "nogroup"
 
+default[:lightnet][:github_locations][:reddit] = "new-day-international/reddit"
+default[:lightnet][:github_locations][:'reddit-i18n'] = "new-day-international/reddit-i18n"
+default[:lightnet][:github_locations][:snudown] = "new-day-international/snudown"
+
 default[:lightnet][:application_directory] = "/home/reddit"
 default[:lightnet][:scratch_directory] = "/home/reddit"
 

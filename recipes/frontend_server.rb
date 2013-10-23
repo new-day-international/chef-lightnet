@@ -60,24 +60,27 @@ directory node[:lightnet][:application_directory] do
   group node[:lightnet][:group]
 end
 
-git "#{node[:lightnet][:application_directory]}/reddit" do 
-  repo 'https://github.com/new-day-international/reddit.git'
-  user node[:lightnet][:user]
-  group node[:lightnet][:group]
-end
+repos = {
+  'reddit' => node[:lightnet][:github_locations][:reddit],
+  'reddit-i18n' => node[:lightnet][:github_locations][:'reddit-i18n'],
+  'snudown' => node[:lightnet][:github_locations][:snudown],
+}
 
+repos.each do |dir, github_loc|
+  git "#{node[:lightnet][:application_directory]}/#{dir}" do 
+    repo "https://github.com/#{github_loc}.git"
+    user node[:lightnet][:user]
+    group node[:lightnet][:group]
+  end
 
-# TODO make production branch for i18n
-git "#{node[:lightnet][:application_directory]}/reddit-i18n" do 
-  repo 'https://github.com/new-day-international/reddit-i18n.git'
-  user node[:lightnet][:user]
-  group node[:lightnet][:group]
-end
-
-git "#{node[:lightnet][:application_directory]}/snudown" do 
-  repo 'https://github.com/new-day-international/snudown.git'
-  user node[:lightnet][:user]
-  group node[:lightnet][:group]
+  bash "add push url for #{dir}" do
+    cwd "#{node[:lightnet][:application_directory]}/#{dir}"
+    user node[:lightnet][:user]
+    group node[:lightnet][:group]
+    code <<-EOH  
+      git config remote.origin.pushurl git@github.com:#{github_loc}.git
+    EOH
+  end
 end
 
 # ###############################################################################
