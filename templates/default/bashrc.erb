@@ -106,4 +106,16 @@ if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
     . /etc/bash_completion
 fi
 
+
+# cd into the source of a python package
+cdp () {
+  cd "$(python -c "import os.path as _, ${1}; \
+    print _.dirname(_.realpath(${1}.__file__[:-1]))"
+  )"
+}
+
+psg () {
+  ps auxf |less -p ${1}
+}
+
 cd <%= "#{node[:lightnet][:application_directory]}/reddit/r2" %>
