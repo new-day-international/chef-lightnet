@@ -83,6 +83,13 @@ repos.each do |dir, github_loc|
   end
 end
 
+bash "install extra python modules from requirements.txt" do
+  cwd "#{node[:lightnet][:application_directory]}/reddit/r2"
+  code <<-BASH
+    pip install -r requirements.txt
+  BASH
+end
+
 # ###############################################################################
 # # Configure PostgreSQL
 # ###############################################################################
@@ -114,7 +121,6 @@ end
 # ###############################################################################
 # # Install and configure the reddit code
 # ###############################################################################
-
 bash "build snudown" do
   cwd "#{node[:lightnet][:application_directory]}/snudown"
   code <<-EOH
@@ -242,21 +248,6 @@ template "/etc/cron.d/reddit" do
   mode 0644
 end
 
-python_pip 'mock' do
-  action :install
-end
-
-python_pip 'nosexcover' do
-  action :install
-end
-
-python_pip 'pylint' do
-  action :install
-end
-
-python_pip 'raven' do
-  action :install
-end
 
 if false
   bash do
