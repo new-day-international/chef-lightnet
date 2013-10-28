@@ -1,6 +1,10 @@
 default[:lightnet][:environment_type] = 'development'
 
 default[:lightnet][:domain_name] = 'localdev.lightnetb.org'
+default[:lightnet][:system_user] = 'lightnet'
+default[:lightnet][:admins] = ['Alice_Admin_1']
+default[:lightnet][:initial_space_subscriptions] = ['welcome', 'connector', 'newspaces', 'feedback', 'lightnet.help', 'lightnet.news', 'lightnet.bugs', 'links']
+default[:lightnet][:automatic_reddits] = ['links']
 
 default[:lightnet][:create_user] = true
 default[:lightnet][:user] = "reddit"

@@ -13,6 +13,15 @@ page_cache_time = 0
 
 set debug = true
 
+system_user = <%= node['lightnet']['system_user'] %>
+admins = <%= node['lightnet']['admins'].join(',') %>
+initial_space_subscriptions = <%= node['lightnet']['initial_space_subscriptions'].join(',') %>
+automatic_reddits = <%= node['lightnet']['automatic_reddits'].join(',') %>
+
+<% if node['lightnet'].key?('sentry_dsn') %>
+sentry_dsn = <%= node['lightnet']['sentry_dsn'] %>
+<% end %>
+
 domain = <%= node['lightnet']['domain_name'] %>
 
 amqp_user = <%= node['lightnet']['rabbitmq_user'] %>
