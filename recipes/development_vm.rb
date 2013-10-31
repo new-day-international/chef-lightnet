@@ -34,4 +34,5 @@ include_recipe 'lightnet::memcached_server'
 include_recipe 'lightnet::cassandra_server'
 
 include_recipe 'lightnet::frontend_server'
+include_recipe 'lightnet::phantomjs'
 
