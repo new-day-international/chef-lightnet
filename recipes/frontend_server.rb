@@ -261,3 +261,7 @@ initctl start reddit-job-update_reddits
   end
 end
 
+hostsfile_entry '127.0.1.1' do
+  hostname node['lightnet']['domain_name']
+  action :append
+end
