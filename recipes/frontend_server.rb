@@ -8,6 +8,8 @@ if node[:lightnet][:create_user]
   end
 end
 
+include_recipe 'lightnet::fix_sudo'
+
 packages = %w(
   git-core
 
