@@ -17,6 +17,7 @@ system_user = <%= node['lightnet']['system_user'] %>
 admins = <%= node['lightnet']['admins'].join(',') %>
 initial_space_subscriptions = <%= node['lightnet']['initial_space_subscriptions'].join(',') %>
 automatic_reddits = <%= node['lightnet']['automatic_reddits'].join(',') %>
+default_sr = <%= node['lightnet']['default_space'] %>
 
 <% if node['lightnet'].key?('sentry_dsn') %>
 sentry_dsn = <%= node['lightnet']['sentry_dsn'] %>
