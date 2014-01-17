@@ -73,6 +73,7 @@ repos.each do |dir, github_loc|
     repo "https://github.com/#{github_loc}.git"
     user node[:lightnet][:user]
     group node[:lightnet][:group]
+    action :checkout
   end
 
   bash "add push url for #{dir}" do
