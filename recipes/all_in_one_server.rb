@@ -1,3 +1,9 @@
+if node[:lightnet][:environment_type] == 'development'
+  log "lightnet environment_type is development"
+else
+  log "lightnet environment_type is #{node[:lightnet][:environment_type].inspect}"
+end
+
 include_recipe 'lightnet::make_myers_happy'
 
 # TODO: make a queue runner recipe

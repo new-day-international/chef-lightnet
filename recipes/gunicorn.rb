@@ -14,8 +14,7 @@ template "/etc/init/reddit-gunicorn.conf" do
   group 'root'
 end
 
-bash "start reddit-gunicorn" do 
-  code <<-BASH
-initctl start reddit-gunicorn
-  BASH
+service 'reddit-gunicorn' do
+  provider Chef::Provider::Service::Upstart
+  action :start
 end
