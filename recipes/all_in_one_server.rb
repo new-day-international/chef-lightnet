@@ -32,5 +32,9 @@ include_recipe 'lightnet::memcached_server'
 include_recipe 'lightnet::cassandra_server'
 
 include_recipe 'lightnet::frontend_server'
-include_recipe 'lightnet::phantomjs'
 
+if node[:lightnet][:environment_type] == 'development'
+  include_recipe 'lightnet::phantomjs'
+else
+  include_recipe 'lightnet::gunicorn'
+end  

@@ -159,9 +159,15 @@ sudo -u #{node[:lightnet][:user]} make ini
   EOH
 end
 
-link "#{node[:lightnet][:application_directory]}/reddit/r2/run.ini" do
-  to "#{node[:lightnet][:application_directory]}/reddit/r2/development.ini"
-end
+if node[:lightnet][:environment_type] == 'development'
+  link "#{node[:lightnet][:application_directory]}/reddit/r2/run.ini" do
+    to "development.ini"
+  end
+else
+  link "#{node[:lightnet][:application_directory]}/reddit/r2/run.ini" do
+    to "production.ini"
+  end
+end  
 
 bash "reddit: setup env" do
   cwd "#{node[:lightnet][:application_directory]}/reddit"
