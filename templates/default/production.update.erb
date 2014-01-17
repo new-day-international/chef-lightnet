@@ -10,5 +10,53 @@ set debug = false
 
 domain =  <%= node['lightnet']['domain_name'] %>
 
+disable_ads = true
+disable_captcha = true
+disable_ratelimit = true
+disable_require_admin_otp = true
+
+system_user = <%= node['lightnet']['system_user'] %>
+admins = <%= node['lightnet']['admins'].join(',') %>
+initial_space_subscriptions = <%= node['lightnet']['initial_space_subscriptions'].join(',') %>
+automatic_reddits = <%= node['lightnet']['automatic_reddits'].join(',') %>
+default_sr = <%= node['lightnet']['default_space'] %>
+
+<% if node['lightnet'].key?('sentry_dsn') %>
+sentry_dsn = <%= node['lightnet']['sentry_dsn'] %>
+<% end %>
+
+domain = <%= node['lightnet']['domain_name'] %>
+
+amqp_user = <%= node['lightnet']['rabbitmq_user'] %>
+amqp_pass = <%= node['lightnet']['rabbitmq_password'] %>
+amqp_virtual_host = <%= node['lightnet']['rabbitmq_vhost'] %>
+
+# minimum age, in days, of an account to be eligible to create a community
+min_membership_create_community = 0
+
+# so tests can post link after link with running into rate limiting
+MIN_RATE_LIMIT_KARMA = 0
+
+CLOUDSEARCH_SEARCH_API = <%= node[:lightnet][:cloudsearch][:link_search] %>
+CLOUDSEARCH_DOC_API = <%= node[:lightnet][:cloudsearch][:link_doc] %>
+CLOUDSEARCH_SUBREDDIT_SEARCH_API = <%= node[:lightnet][:cloudsearch][:subreddit_search] %>
+CLOUDSEARCH_SUBREDDIT_DOC_API = <%= node[:lightnet][:cloudsearch][:subreddit_doc] %>
+
+S3KEY_ID = <%= node[:lightnet][:s3][:key_id] %>
+S3SECRET_KEY = <%= node[:lightnet][:s3][:secret_key] %>
+s3_user_files_bucket = <%= node[:lightnet][:s3][:user_files_bucket] %>
+s3_user_files_host = <%= node[:lightnet][:s3][:user_files_host] %>
+# for space header images
+s3_media_buckets = <%= node[:lightnet][:s3][:media_buckets] %>
+
+# global secret
+SECRET = <%= node[:lightnet][:secret] %>
+# secret for /prefs/feeds
+FEEDSECRET = <%= node[:lightnet][:feed_secret] %>
+# used for authenticating admin API calls w/o cookie
+ADMINSECRET = <%= node[:lightnet][:admin_secret] %>
+
+googleanalytics = <%= node[:lightnet][:google_analytics] %>
+
 [server:main]
 port = 8001
